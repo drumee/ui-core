@@ -1,0 +1,13 @@
+@import 'mixins/drumee';
+
+.libs-note{
+  &__ui{
+    background-color: inherit;
+  }
+  &__main{
+    background-color: inherit;
+  }
+  &__container{
+    background-color: inherit;
+  }
+}

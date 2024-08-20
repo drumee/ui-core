@@ -1,0 +1,32 @@
+{
+  "name": "@drumee/ui-core",
+  "version": "1.0.0",
+  "description": "Drumee User Interface Core Library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drumee/ui-core.git"
+  },
+  "keywords": [
+    "Javascript",
+    "User",
+    "Interface",
+    "Pattern",
+    "Design",
+    "MVC"
+  ],
+  "author": "Somanos Sar <somanos@drumee.com> (http://drumee.org)",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/drumee/ui-core/issues"
+  },
+  "homepage": "https://github.com/drumee/ui-core#readme",
+  "dependencies": {
+    "backbone": "^1.6.0",
+    "backbone.marionette": "^4.1.3",
+    "backbone.radio": "^2.0.0"
+  }
+}
