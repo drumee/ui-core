@@ -116,29 +116,43 @@ class __user_profile extends LetcBox {
    * 
    */
   initiales() {
-    let firstname, lastname;
-    try {
-      firstname = this.mget(_a.firstname)[0] || '?';
-    } catch (error) {
-      firstname = '';
-    }
-    try {
-      lastname = this.mget(_a.lastname)[0] || firstname[0] || "";
-    } catch (error1) {
-      lastname = '';
-    }
+    // Never invent a letter. The previous form read `mget(firstname)[0] || '?'`,
+    // so an EMPTY-STRING firstname (not a missing one — `''[0]` is undefined and
+    // does not throw) became '?', and the lastname line copied that '?' through
+    // its `|| firstname[0]` fallback: an entity whose name parts are both ''
+    // rendered the literal "??" in its avatar. Worse, "??" is two characters
+    // long, so it also defeated the two escape hatches below it — the whole-name
+    // fallback (guarded on a zero-length result) and the empty-initials path in
+    // _show() that draws the generic avatar. Callers legitimately pass '' when
+    // they normalise a missing part (`mget(_a.firstname) || ''`), and some rows
+    // genuinely have no parts at all while still naming the person in another
+    // field, so a blank part has to mean "unknown", not "print punctuation".
+    const letter = (v) => {
+      if (v == null) return '';
+      const s = `${v}`.trim();
+      return s ? s[0] : '';
+    };
 
-    if ((firstname.length + lastname.length) === 0) {
-      let a, b;
-      try {
-        [a, b] = this.mget(_a.surname).split(/ /);
-        firstname = a[0];
-        lastname = b[0];
-      } catch (error2) {
-        firstname = '';
+    let firstname = letter(this.mget(_a.firstname));
+    let lastname = letter(this.mget(_a.lastname));
+
+    if (!firstname && !lastname) {
+      // No name parts. Callers holding only a whole name put it in one of these
+      // — `surname` (contacts, member services), `fullname`, `username` (a chat
+      // or conference display name). Split it here so those surfaces derive the
+      // SAME initials, and the same colorFromName() colour, as the ones that do
+      // pass the parts.
+      const whole = `${this.mget(_a.surname) || this.mget(_a.fullname)
+        || this.mget(_a.username) || this.mget('display') || ''}`.trim();
+      if (whole) {
+        const [a, b] = whole.split(/[\s,]+/);
+        firstname = letter(a);
+        lastname = letter(b);
       }
     }
 
+    // Genuinely nothing to show: return '' so _show() falls through to the
+    // generic avatar template rather than printing punctuation at the user.
     return firstname + lastname;
   }
 
